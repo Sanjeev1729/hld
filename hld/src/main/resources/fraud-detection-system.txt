@@ -1,0 +1,30 @@
+Functional Requirements :
+
+- Banking transaction system before processing the transaction will call fraud detection service to check for any fraud.
+
+- The frad service will need the user transaction history, credit card settings
+( to check card limit, transaction limit , international transaction status ) and then use the same to check for any major delection in velocity from regular transaction history of the user.
+
+- If it is fraud transaction then system should flag it.
+
+- System should store all the transaction logs even if it is valid or not valid.
+
+Non Functional :
+
+- CAP theorem : Highly consistent and eventually available as well.
+
+- System should have low latency , highly scalable and secure.
+
+Entities :
+
+- Banking transaction service
+
+- Fraud detection service
+
+- Location
+
+API design :
+
+- post : detectFraud (current_transaction_amount,currency, location)
+( We can use strategy design pattern here for fraud detection and its controller can be singleton )
+

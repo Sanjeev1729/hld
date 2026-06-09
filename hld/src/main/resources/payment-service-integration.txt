@@ -1,0 +1,26 @@
+Payment System Design :
+
+Functional Req :
+
+- There will be a website where user will buy items and on checkout they will do the payment.
+
+- Now during checkout, the service provider on behalf user will request for payment-intent to the payment service.
+
+- Payment intent service will acknowledge the intent and store the details such as payment_id, amount, currency , user_id and other details in db.
+
+- Then merchant will call payment token service and the session token service will generate a session token and return an url embebed with session toke for payment.
+
+- User will enter the card details and payment service will be called & payment will be made
+
+- Payment service should return payment status at the end.
+
+Non Functional :
+
+CAP theorem : Here system should be highly consistent and should be availble as well.
+
+- System should have low latency say 200 ms per API call.
+
+- System should be scalable .
+
+- System should be secure. ( Like follow PIC DSS )
+

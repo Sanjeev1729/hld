@@ -1,0 +1,58 @@
+Functional :
+
+- We are designing a loyalty program for a system , the system can be a booking site like booking.com or can can be e commerce like amazon etc.
+
+- So on each purchase users will get a point.
+
+- There will be a milestone for a certain number of points. Example starting can beginner with 10 point, intermediate with 500 point , champion with 1000 points
+
+- Once a user hits a milestone we need to inform user via a notification or via app itself.
+
+- User should be able to redeem the points in further bookings or should be able to convert it to cash.
+
+Non functional :
+
+- CAP theorem : The system here should be available so that the user can view his current points stats
+
+- And simultanesouly it should be consistent
+
+- System be able to scale.
+
+- The apis should have low latency say 50-100ms.
+
+- System should be secure.
+
+Read and Writes
+
+The view points related APIs are going to be read heavy with RQS = 10000 / sec and the redem API is going to be write heavy 1000 RQS.
+
+Entities :
+
+- User
+
+- Points
+
+- Milestones
+
+- Redemption History
+
+API Design
+
+- post v1/updatePoints?userId='xyz'&pointAccurred='10' ( this call will be made by the booking service or a cron which always checks for the recent purchase and creates a request in pipline to update the points ) - whethere i this or not will see design as cron will publish this to kafka
+
+returns 200 OK status
+
+- get v1/viewPoints?userId='123'
+
+return total points user has collected so far along with points history
+
+- get v1/getMilestones?userId='123'
+
+Returns the list of milestones and completed milestones
+
+- post v1/redeem?userId='123'&point='1234'
+
+substract the point used and update the points
+
+- How is notification implemented is it via API calls not sure... you help how usually is notification sent
+
