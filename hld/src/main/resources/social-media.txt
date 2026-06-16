@@ -1,0 +1,96 @@
+Functional Requirements :
+
+- User should be able to upload the photo ( not considering video while starting as videos needs to be chunked not sure who chunks client or server you will tell me this )
+
+- User should be able to follow a user.
+
+- User should be able to like and comment a post.
+
+- User should be able to view the feed.
+
+Non functional :
+
+- CAP theorem : Here we need system to availbale and eventaully concistent
+
+- It should have low latency say 200ms for feed loading.
+
+- It should be reliable & fault tolerant.
+
+Scale :
+
+- DAU : 1M
+
+- Daily post : 2 * 1M = 2M
+
+- Read : write = 1:1000 ( Read heavy system )
+
+- Storage = 1 TB daily
+
+APIs :
+
+Post creation :
+
+- /v1/upload Upload service will call the s3 and s3 will give it a url where it needs to upload. Once upload the upload service will send the photo meta data to the service. And service will store the same.
+
+Return : 200 OK
+
+- /v1/deletePhoto
+
+Request : {photo_id, user_id }
+
+Followers :
+
+- v1/follow
+
+Request : {user_id, follower_id (user_id 2))
+
+status : 200 OK
+
+Feed : v1/feed/{userId}
+
+Response : List<Post>
+
+There can be other crud APIs as well like update , delete , which we can add based on requirements
+
+// Response from /v1/posts/upload-url
+{
+  "upload_url": "https://s3.amazonaws.com/instagram-photos/raw-123.jpg?AWSAccessKeyId=...",
+  "photo_id": "photo_uuid_999"
+}
+
+Below is the flow :
+
+- First uploading a video
+
+- User for request for uploading a video. Upload service returns a url and phot_id where the client needs to push the photo.
+
+- Once client has pushed the photo and it gets 200 ok status from the s3 service. It then calls the upload service with the phot metadata like user id, photo id , url etc.
+
+- Then this request is placed on kafka raw topic then a moderator service picks these kafka event and validates the content of the photo uploaded and if it is ok then it pushes the same to filtered topic else to block topic.
+
+- Now a post publihser service pushes the metadata to a nosql db.
+
+- Then a fan out service picks up the event sfrom filtered topic and it creates a strcuture like post, list<followers> and push it to a kafka.
+
+- Then a kafka consumer picks these events and updated the feed db & feed cache.
+
+- For the celebraty what does the feedservice do is it calls the materialize service and that materialize service get the post of the celeb. ( feedservice also fetches the followers list first herer )
+
+-Follower service and engagement service is self explainatory. we use db and cache.
+
+We use here kafka with multiple broker and replica factor > 1
+
+CREATE TABLE user_following (
+    user_id uuid,
+    followed_id uuid,
+    created_at timestamp,
+    PRIMARY KEY (user_id, followed_id)
+);
+
+
+CREATE TABLE user_followers (
+    followed_id uuid,
+    follower_id uuid,
+    created_at timestamp,
+    PRIMARY KEY (followed_id, follower_id)
+);

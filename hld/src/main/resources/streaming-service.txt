@@ -1,0 +1,49 @@
+Functional Requirements :
+
+- We should be able to upload the movie.
+
+- User should be able to search for a movie.
+
+- User should be able to play the movie.
+
+Non Functional :
+
+- Support different devices & different resolutions
+
+- CAP theorem : Availability is more important then consistency
+
+- Low Latency
+
+- Scalable, reliable, fault tolerant
+
+Scale :
+
+- DAU = 1M
+
+- Read heavy system
+
+- Storage : 1000 of TB
+
+GET /v1/search?q=Stranger+Things&genre=sci-fi&lang=en&limit=20&offset=0
+
+// Optimized Response:
+{
+  "results": [
+    {
+      "movie_id": "mov_9988",
+      "title": "Stranger Things",
+      "thumbnail_url": "https://cdn.netflix.com/images/st1.jpg",
+      "duration_seconds": 3600
+    }
+  ],
+  "total_results": 1
+}
+
+GET /v1/movies/mov_9988/play?user_id=usr_123&device_type=smart_tv
+
+Optimized Response:
+{
+  "manifest_url": "https://edge-cdn.netflix.com/assets/mov_9988/master.m3u8",
+  "license_token": "jwt_secure_streaming_token_abc123",
+  "current_offset_seconds": 1240 // Auto-resume where the user last left off!
+}
